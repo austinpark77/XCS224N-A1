@@ -60,8 +60,8 @@ def compute_co_occurrence_matrix(corpus, window_size=4):
 
     def _add_dups_once(wndw, wrd, seen):
         count = wndw.count(wrd)
-        if count > 2 and (wrd not in seen):
-            M[word2Ind[word], word2Ind[word]] += count
+        if count > 1 and (wrd not in seen):
+            M[word2Ind[word], word2Ind[word]] += count - 1  # don't count target
             seen.add(wrd)
         return seen
 
@@ -79,27 +79,6 @@ def compute_co_occurrence_matrix(corpus, window_size=4):
                     seen = _add_dups_once(window, word, seen)
     ### SOLUTION END
     return M, word2Ind
-
-
-# np.fill_diagonal(M, M.diagonal() - 1)
-#     M[word2Ind[word], word2Ind[neighb]] += 1
-# # handle duplicates of target
-# if i // window_size > 0:  # more than halfway
-#     windex = window_size
-# else:
-#     windex = len(window) - (window_size + 1)
-
-# if j != windex:
-# M[word2Ind[word], word2Ind[neighb]] += 1
-# print(
-#     "!!!",
-#     "target:",
-#     word,
-#     "target_ind:",
-#     windex,
-#     "neighb_ind:",
-#     j,
-# )
 
 
 def reduce_to_k_dim(M, k=2):
