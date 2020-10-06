@@ -54,21 +54,52 @@ def compute_co_occurrence_matrix(corpus, window_size=4):
     M = None
     word2Ind = {}
 
-    ### SOLUTION BEGIN
+    ### SOLUTION BEG    IN
     word2Ind = {w: i for i, w in enumerate(words)}
     M = np.zeros((num_words, num_words))
+
+    def _add_dups_once(wndw, wrd, seen):
+        count = wndw.count(wrd)
+        if count > 2 and (wrd not in seen):
+            M[word2Ind[word], word2Ind[word]] += count
+            seen.add(wrd)
+        return seen
+
     for c in corpus:
         for i, word in enumerate(c):
             start = i - window_size if i - window_size >= 0 else 0
             end = i + window_size if i + window_size <= len(c) else len(c)
             window = c[start : end + 1]
-            for neighb in window:
+            seen = set()
+            for j, neighb in enumerate(window):
+                # skip word itself, not adjacent occurences
                 if word != neighb:
                     M[word2Ind[word], word2Ind[neighb]] += 1
-
+                else:
+                    seen = _add_dups_once(window, word, seen)
     ### SOLUTION END
-
     return M, word2Ind
+
+
+# np.fill_diagonal(M, M.diagonal() - 1)
+#     M[word2Ind[word], word2Ind[neighb]] += 1
+# # handle duplicates of target
+# if i // window_size > 0:  # more than halfway
+#     windex = window_size
+# else:
+#     windex = len(window) - (window_size + 1)
+
+# if j != windex:
+# M[word2Ind[word], word2Ind[neighb]] += 1
+# print(
+#     "!!!",
+#     "target:",
+#     word,
+#     "target_ind:",
+#     windex,
+#     "neighb_ind:",
+#     j,
+# )
 
 
 def reduce_to_k_dim(M, k=2):
